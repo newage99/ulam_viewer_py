@@ -1,6 +1,9 @@
 #! /usr/bin/python3
-import sys, math
+import sys, math, time
 from PIL import Image
+from primes import getPrimes
+
+NUMBERS_LIMIT = 90000000
 
 def main():
 
@@ -45,52 +48,76 @@ def main():
         # We create a blank image
         img = Image.new('1', (wh,wh))
         pix = img.load()
-
-        # We create a list of booleans that'll represent if this index is prime or not
-        primes = [True] * (max_number+1)
-        primes[0] = False
-        primes[1] = False
-
-        # We delete from the list the non-prime numbers (Eratosthenes Sieve)
-        for i in range(2, 1+int(math.ceil(math.sqrt(max_number)))):
-            if primes[i] == True:
-                j = int(math.pow(i,2))
-                while j <= max_number:
-                    primes[j] = False
-                    j += i
-
+        
         cont = 0
         times = 1
         cont_2_veces = 0
         dirr = 0
+        lo_que_lleva = 0
+        lo_que_resta = max_number
+        delta = math.ceil(max_number/NUMBERS_LIMIT)
+        num_of_primes = 0
+        sqrt_all = math.floor(math.sqrt(max_number))
+        primes = [0] * sqrt_all
+        start = time.time()
 
-        # We create the ulam image based on the primes list
-        for i in range(1,max_number+1):
+        for i in range(delta):
+
+            limit = NUMBERS_LIMIT            
+
+            if lo_que_resta < NUMBERS_LIMIT:
+                limit = lo_que_resta
+
+            lo_que_lleva_end = lo_que_lleva + limit
+
+            print("lo_que_lleva: "+str(lo_que_lleva))
+            print("lo_que_lleva_end: "+str(lo_que_lleva_end))
             
-            pix[offset_x,offset_y] = int(primes[i])
+            primeList = getPrimes(lo_que_lleva,lo_que_lleva_end,primes[:num_of_primes])
 
-            if cont == times:
-                if cont_2_veces == 0:
-                    cont_2_veces += 1
-                elif cont_2_veces == 1:
-                    times += 1
-                    cont_2_veces = 0
-                dirr += 1
-                cont = 0
+            limit_range = limit
+            if lo_que_lleva == 0:
+                limit_range -= 1
+
+            for j in range(limit_range):
+
+                if primeList[j] == True:
+                    pix[offset_x,offset_y] = 1
+                    if primes[num_of_primes-1] < sqrt_all:
+                        primes[num_of_primes] = j+1+lo_que_lleva
+                        num_of_primes += 1
+                else:
+                    pix[offset_x,offset_y] = 0
                 
-            cont += 1
-            dirr = dirr % 4
+                if cont == times:
+                    if cont_2_veces == 0:
+                        cont_2_veces += 1
+                    elif cont_2_veces == 1:
+                        times += 1
+                        cont_2_veces = 0
+                    dirr += 1
+                    cont = 0
+                    
+                cont += 1
+                dirr = dirr % 4
 
-            if dirr == 0:
-                offset_x += 1
-            elif dirr == 1:
-                offset_y -= 1
-            elif dirr == 2:
-                offset_x -= 1
-            elif dirr == 3:
-                offset_y += 1
+                if dirr == 0:
+                    offset_x += 1
+                elif dirr == 1:
+                    offset_y -= 1
+                elif dirr == 2:
+                    offset_x -= 1
+                elif dirr == 3:
+                    offset_y += 1
 
-        # We save the image
+            lo_que_lleva = lo_que_lleva_end
+            lo_que_resta -= limit
+            primeList = []
+
+        done = time.time()
+
+        print("time: "+str(done-start))
+
         img.save("ulam.png")
         img.show()
     

@@ -82,24 +82,26 @@ def main():
             for j in range(limit_range):
 
                 if primeList[j] == True:
+                    
                     pix[offset_x,offset_y] = 1
+                    
                     if primes[num_of_primes-1] < sqrt_all:
                         primes[num_of_primes] = j+1+lo_que_lleva
                         num_of_primes += 1
+                        
                 else:
                     pix[offset_x,offset_y] = 0
                 
                 if cont == times:
                     if cont_2_veces == 0:
                         cont_2_veces += 1
-                    elif cont_2_veces == 1:
+                    else:
                         times += 1
                         cont_2_veces = 0
-                    dirr += 1
+                    dirr = (dirr+1)%4
                     cont = 0
                     
                 cont += 1
-                dirr = dirr % 4
 
                 if dirr == 0:
                     offset_x += 1
@@ -107,7 +109,7 @@ def main():
                     offset_y -= 1
                 elif dirr == 2:
                     offset_x -= 1
-                elif dirr == 3:
+                else:
                     offset_y += 1
 
             lo_que_lleva = lo_que_lleva_end
@@ -119,7 +121,7 @@ def main():
         print("time: "+str(done-start))
 
         img.save("ulam.png")
-        img.show()
+        #img.show()
     
 
 if __name__ == "__main__":

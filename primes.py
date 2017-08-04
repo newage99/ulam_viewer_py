@@ -23,9 +23,6 @@ def getPrimes(start,stop,prev_primes):
 
     else:
 
-        #for i in prev_primes:
-            #print(i)
-
         values = [True] * (stop-start)
         sqrt = math.ceil(math.sqrt(stop))
 
